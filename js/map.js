@@ -58,7 +58,7 @@ function init (stat) {
 }
 
 function get_key (i, k) {
-    console.debug ("get_key", i, k)
+    // console.debug ("get_key", i, k)
     return k * 100 + i
 }
 
