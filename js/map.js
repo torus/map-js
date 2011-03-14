@@ -50,10 +50,7 @@ function init (stat) {
 
     for (var i in stat.tiles) {
 	var t = stat.tiles[i]
-//	t.show ()
-//	if (! t.parent ()) {
-	    stat.map_elem.append (t)
-//	}
+	stat.map_elem.append (t)
     }
 }
 
@@ -71,8 +68,10 @@ function gen_piece (stat, i, k) {
 
     var elem = stat.cache.lookup (get_key (i, k))
     if (! elem) {
-	elem = $('<img>').attr ("src", file)
-	stat.cache.store (get_key (i, k), elem)
+	elem = $('<img>').attr ("src", file).css ({position: "absolute",
+						   top: (k * 256).toString () + "px",
+						   left: (i * 256).toString () + "px"})
+	stat.cache.store (get_key (i, k), elem, function () {elem.remove ()})
     }
 
     return elem
@@ -80,7 +79,7 @@ function gen_piece (stat, i, k) {
 
 function on_drag (stat) {
     return function (event, ui) {
-	console.debug (event.clientX - stat.start.x, event.clientY - stat.start.y)
+	// console.debug (event.clientX - stat.start.x, event.clientY - stat.start.y)
     }
 }
 
