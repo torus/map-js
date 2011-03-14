@@ -74,6 +74,25 @@ function make_cache (size) {
     return stat
 }
 
+////////
+// OO interface
+
+KeyValueCache = function (size) {
+    this.cache = make_cache (size)
+}
+
+KeyValueCache.prototype.store = function (key, value) {
+    cache_store (this.cache, key, value)
+
+    return this
+}
+
+KeyValueCache.prototype.lookup = function (key) {
+    return cache_lookup (this.cache, key)
+}
+
+//////////
+
 function test () {
     var key = 1234
     var value = "hogehoge";
@@ -97,6 +116,18 @@ function test () {
     console.assert (cache.head.content == x2)
 }
 
+function test_oo () {
+    var cache = new KeyValueCache (5)
+    console.debug (cache)
+    cache.store (1001, "hoge1")
+    var result = cache.lookup (1001)
+    console.debug (result.value)
+    console.assert (result.value == "hoge1")
+    cache.store (1002, "hoge2").store (1003, "hoge3")
+    console.assert (cache.lookup (1003).value == "hoge3")
+}
+
 console.debug ("start")
 test ()
+test_oo ()
 console.debug ("done")
