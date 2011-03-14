@@ -1,10 +1,10 @@
-function cache_store (stat, key, value) {
+function cache_store (stat, key, value, on_removed) {
     var full = true
     for (var i = 0; i < stat.a.length; i ++) {
         // console.debug (i, stat.a[i])
         var elem = stat.a[i]
         if (! elem.content) {
-            elem.content = {key: key, value: value}
+            elem.content = {key: key, value: value, on_removed: on_removed}
 
             if (stat.head) {
                 stat.head.prev = elem
@@ -24,7 +24,8 @@ function cache_store (stat, key, value) {
         console.assert (stat.head, "head")
 
         var elem = stat.last
-        elem.content = {key: key, value: value}
+        var to_be_removed = elem.content
+        elem.content = {key: key, value: value, on_removed: on_removed}
 
         // console.debug (elem)
         stat.last = elem.prev
@@ -38,6 +39,10 @@ function cache_store (stat, key, value) {
 
         console.assert (stat.last.next == null, "next of last must be null")
         console.assert (stat.head.prev == null, "prev of head must be null")
+
+        if (to_be_removed.on_removed) {
+            to_be_removed.on_removed ()
+        }
     }
 
     // console.debug (stat.a)
@@ -81,8 +86,8 @@ KeyValueCache = function (size) {
     this.cache = make_cache (size)
 }
 
-KeyValueCache.prototype.store = function (key, value) {
-    cache_store (this.cache, key, value)
+KeyValueCache.prototype.store = function (key, value, on_removed) {
+    cache_store (this.cache, key, value, on_removed)
 
     return this
 }
@@ -99,14 +104,20 @@ function test () {
     var value = "hogehoge";
 
     var cache = make_cache (5)
+    var removed = false
 
-    cache_store (cache, key, value)
+    cache_store (cache, key, value, function () {removed = true})
 
     cache_store (cache, 1235, "hoge2")
     cache_store (cache, 1236, "hoge3")
     cache_store (cache, 1237, "hoge4")
     cache_store (cache, 1238, "hoge5")
+
+    console.assert (!removed)
+
     cache_store (cache, 1239, "hoge6")
+
+    console.assert (removed)
 
     var x = cache_lookup (cache, key)
     console.assert (!x)
