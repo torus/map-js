@@ -88,7 +88,8 @@ KeyValueCache.prototype.store = function (key, value) {
 }
 
 KeyValueCache.prototype.lookup = function (key) {
-    return cache_lookup (this.cache, key)
+    var content = cache_lookup (this.cache, key)
+    return content && content.value
 }
 
 //////////
@@ -121,13 +122,13 @@ function test_oo () {
     console.debug (cache)
     cache.store (1001, "hoge1")
     var result = cache.lookup (1001)
-    console.debug (result.value)
-    console.assert (result.value == "hoge1")
+    console.debug (result)
+    console.assert (result == "hoge1")
     cache.store (1002, "hoge2").store (1003, "hoge3")
-    console.assert (cache.lookup (1003).value == "hoge3")
+    console.assert (cache.lookup (1003) == "hoge3")
 }
 
-console.debug ("start")
-test ()
-test_oo ()
-console.debug ("done")
+// console.debug ("start")
+// test ()
+// test_oo ()
+// console.debug ("done")
