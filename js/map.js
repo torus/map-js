@@ -2,7 +2,7 @@ $(document).ready (function () {
     var stat = {offset: {x: 0, y: 0},
 		start: {x: 0, y: 0},
 		offset_index: {x: null, y: null},
-		cache: new KeyValueCache (50),
+		cache: new KeyValueCache (25),
 		tiles: []}
 
     var map_elem = $("<div>").draggable ({
@@ -12,16 +12,17 @@ $(document).ready (function () {
 	})
     $("body").append (map_elem)
     stat.map_elem = map_elem
-    init (stat)
+
+    render (stat)
 })
 
-function init (stat) {
+function render (stat) {
     var u = 256			// unit size in pixel
-    var ox = Math.floor (stat.offset.x / u)
-    var oy = Math.floor (stat.offset.y / u)
+    var ox = - Math.floor (stat.offset.x / u)
+    var oy = - Math.floor (stat.offset.y / u)
 
-    if (ox == 0) ox = 1
-    if (oy == 0) oy = 1
+    if (ox < 1) ox = 1
+    if (oy < 1) oy = 1
 
     if (stat.offset_index.x != ox || stat.offset_index.y != oy) {
 	stat.tiles[ 0] = gen_piece (stat, ox - 1, oy - 1)
@@ -43,6 +44,8 @@ function init (stat) {
 	stat.tiles[13] = gen_piece (stat, ox    , oy + 2)
 	stat.tiles[14] = gen_piece (stat, ox + 1, oy + 2)
 	stat.tiles[15] = gen_piece (stat, ox + 2, oy + 2)
+
+	console.debug ("pieces ready")
     }
 
     stat.offset_index.x = ox
@@ -50,7 +53,8 @@ function init (stat) {
 
     for (var i in stat.tiles) {
 	var t = stat.tiles[i]
-	stat.map_elem.append (t)
+	if (t.parent ().length == 0)
+	    stat.map_elem.append (t)
     }
 }
 
@@ -64,6 +68,7 @@ function fill_0 (n) {
 }
 
 function gen_piece (stat, i, k) {
+    console.debug ("gen_piece", i, k)
     var file = "images/" + fill_0 (i) + "-" + fill_0 (k) + ".png"
 
     var elem = stat.cache.lookup (get_key (i, k))
@@ -96,5 +101,7 @@ function on_stop (stat) {
 	stat.offset.y += event.clientY - stat.start.y
 
 	console.debug (stat.offset.x, stat.offset.y)
+
+	render (stat)
     }
 }

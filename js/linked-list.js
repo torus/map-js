@@ -19,6 +19,8 @@ function cache_store (stat, key, value, on_removed) {
         }
     }
 
+    console.debug (full)
+
     if (full) {
         console.assert (stat.last, "last")
         console.assert (stat.head, "head")
@@ -47,22 +49,84 @@ function cache_store (stat, key, value, on_removed) {
 
     // console.debug (stat.a)
     // console.debug (stat.head.content.key, stat.last.content.key)
+
+    console.debug ("store")
+    console.assert (! detect_loop (stat), "loop detected")
+}
+
+function detect_loop (stat) {
+    var e1 = stat.head
+    var e2 = stat.head
+    var output = ""
+    while (e1) {
+        output += e1.content.key.toString () + " "
+
+        e1 = e1.next
+        e2 = e2 && e2.next && e2.next.next
+
+        if (e1 && e2 && e1 == e2) {
+            console.debug ("loop detected!")
+            
+            return true
+        }
+    }
+
+    output += "| "
+
+    e1 = stat.last
+    e2 = stat.last
+    while (e1) {
+        output += e1.content.key.toString () + " "
+
+        e1 = e1.prev
+        e2 = e2 && e2.prev && e2.prev.prev
+
+        if (e1 && e2 && e1 == e2) {
+            console.debug ("loop detected!")
+            
+            return true
+        }
+    }
+
+    console.debug (output)
 }
 
 function cache_lookup (stat, key) {
+    console.debug ("lookup")
     for (var elem = stat.head; elem; elem = elem.next) {
         if (elem.content && elem.content.key == key) {
-            if (elem.prev) elem.prev.next = elem.next
-            if (elem.next) elem.next.prev = elem.prev
-            elem.prev = null
-            elem.next = stat.head
-            stat.head = elem
+            if (elem == stat.head) {
+                return elem.content
+            }
 
+            if (elem == stat.last) {
+                console.assert (elem.next == null)
+                stat.last = elem.prev
+                if (elem.prev) elem.prev.next = null
+                elem.prev = null
+                elem.next = stat.head
+                stat.head.prev = elem
+                stat.head = elem
+            } else {
+                var next = elem.next
+                var prev = elem.prev
+                console.assert (next)
+                console.assert (prev)
+                if (prev) prev.next = next
+                if (next) next.prev = prev
+                elem.prev = null
+                elem.next = stat.head
+                stat.head.prev = elem
+                stat.head = elem
+            }
             // console.debug (elem)
 
+            console.assert (! detect_loop (stat), "loop detected")
             return elem.content
         }
     }
+
+    console.assert (! detect_loop (stat), "loop detected")
 }
 
 function make_cache (size) {
@@ -126,6 +190,9 @@ function test () {
     console.assert (x2.value == "hoge5")
     // console.debug (cache.head)
     console.assert (cache.head.content == x2)
+
+    var x3 = cache_lookup (cache, 9999)
+    console.assert (!x3)
 }
 
 function test_oo () {
@@ -139,7 +206,7 @@ function test_oo () {
     console.assert (cache.lookup (1003) == "hoge3")
 }
 
-// console.debug ("start")
-// test ()
-// test_oo ()
-// console.debug ("done")
+console.debug ("start")
+test ()
+test_oo ()
+console.debug ("done")
