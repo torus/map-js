@@ -68,8 +68,9 @@ function fill_0 (n) {
 }
 
 function gen_piece (stat, i, k) {
+    var level = 0
     console.debug ("gen_piece", i, k)
-    var file = "images/" + fill_0 (i) + "-" + fill_0 (k) + ".png"
+    var file = "images/" + [level, fill_0 (i), fill_0 (k)].join ("-") + ".png"
 
     var elem = stat.cache.lookup (get_key (i, k))
     if (! elem) {
