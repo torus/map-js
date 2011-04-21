@@ -24,26 +24,28 @@ function render (stat) {
     if (ox < 1) ox = 1
     if (oy < 1) oy = 1
 
+    var level = 0
+
     if (stat.offset_index.x != ox || stat.offset_index.y != oy) {
-	stat.tiles[ 0] = gen_piece (stat, ox - 1, oy - 1)
-	stat.tiles[ 1] = gen_piece (stat, ox    , oy - 1)
-	stat.tiles[ 2] = gen_piece (stat, ox + 1, oy - 1)
-	stat.tiles[ 3] = gen_piece (stat, ox + 2, oy - 1)
+	stat.tiles[ 0] = gen_piece (level, stat, ox - 1, oy - 1)
+	stat.tiles[ 1] = gen_piece (level, stat, ox    , oy - 1)
+	stat.tiles[ 2] = gen_piece (level, stat, ox + 1, oy - 1)
+	stat.tiles[ 3] = gen_piece (level, stat, ox + 2, oy - 1)
 
-	stat.tiles[ 4] = gen_piece (stat, ox - 1, oy    )
-	stat.tiles[ 5] = gen_piece (stat, ox    , oy    )
-	stat.tiles[ 6] = gen_piece (stat, ox + 1, oy    )
-	stat.tiles[ 7] = gen_piece (stat, ox + 2, oy    )
+	stat.tiles[ 4] = gen_piece (level, stat, ox - 1, oy    )
+	stat.tiles[ 5] = gen_piece (level, stat, ox    , oy    )
+	stat.tiles[ 6] = gen_piece (level, stat, ox + 1, oy    )
+	stat.tiles[ 7] = gen_piece (level, stat, ox + 2, oy    )
 
-	stat.tiles[ 8] = gen_piece (stat, ox - 1, oy + 1)
-	stat.tiles[ 9] = gen_piece (stat, ox    , oy + 1)
-	stat.tiles[10] = gen_piece (stat, ox + 1, oy + 1)
-	stat.tiles[11] = gen_piece (stat, ox + 2, oy + 1)
+	stat.tiles[ 8] = gen_piece (level, stat, ox - 1, oy + 1)
+	stat.tiles[ 9] = gen_piece (level, stat, ox    , oy + 1)
+	stat.tiles[10] = gen_piece (level, stat, ox + 1, oy + 1)
+	stat.tiles[11] = gen_piece (level, stat, ox + 2, oy + 1)
 
-	stat.tiles[12] = gen_piece (stat, ox - 1, oy + 2)
-	stat.tiles[13] = gen_piece (stat, ox    , oy + 2)
-	stat.tiles[14] = gen_piece (stat, ox + 1, oy + 2)
-	stat.tiles[15] = gen_piece (stat, ox + 2, oy + 2)
+	stat.tiles[12] = gen_piece (level, stat, ox - 1, oy + 2)
+	stat.tiles[13] = gen_piece (level, stat, ox    , oy + 2)
+	stat.tiles[14] = gen_piece (level, stat, ox + 1, oy + 2)
+	stat.tiles[15] = gen_piece (level, stat, ox + 2, oy + 2)
 
 	console.debug ("pieces ready")
     }
@@ -67,8 +69,7 @@ function fill_0 (n) {
     return ("0" + n.toString ()).substr (-2)
 }
 
-function gen_piece (stat, i, k) {
-    var level = 0
+function gen_piece (level, stat, i, k) {
     console.debug ("gen_piece", i, k)
     var file = "images/" + [level, fill_0 (i), fill_0 (k)].join ("-") + ".png"
 
