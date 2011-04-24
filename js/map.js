@@ -77,8 +77,8 @@ function gen_piece (level, stat, i, k) {
     var elem = stat.cache.lookup (get_key (i, k))
     if (! elem) {
 	elem = $('<img>').attr ("src", file).css ({position: "absolute",
-						   top: (k * 256).toString () + "px",
-						   left: (i * 256).toString () + "px"})
+						   top: ((k - 1) * 256).toString () + "px",
+						   left: ((i - 1) * 256).toString () + "px"})
 	stat.cache.store (get_key (i, k), elem, function () {elem.remove ()})
     }
 
