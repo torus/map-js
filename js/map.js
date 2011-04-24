@@ -17,14 +17,15 @@ $(document).ready (function () {
 })
 
 function render (stat) {
-    var u = 256			// unit size in pixel
+    var mag = 1
+    var level = 0
+    var u = 256 * Math.pow (2, level) // unit size in pixel
+
     var ox = - Math.floor (stat.offset.x / u)
     var oy = - Math.floor (stat.offset.y / u)
 
     if (ox < 1) ox = 1
     if (oy < 1) oy = 1
-
-    var level = 0
 
     if (stat.offset_index.x != ox || stat.offset_index.y != oy) {
 	stat.tiles[ 0] = gen_piece (level, stat, ox - 1, oy - 1)
