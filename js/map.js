@@ -3,84 +3,121 @@ $(document).ready (function () {
 		start: {x: 0, y: 0},
 		offset_index: {x: null, y: null},
 		cache: new KeyValueCache (25),
-		tiles: []}
+		tiles: [],
+                window: 1}
 
     var map_elem = $("<div>").draggable ({
 	    start: on_start (stat),
 	    drag: on_drag (stat),
 	    stop: on_stop (stat)
 	})
-    $("body").append (map_elem)
+    $("#map-content").append (map_elem)
     stat.map_elem = map_elem
 
     render (stat)
+
+    $("#control").append ($("<p>").
+                          append ($("<a>").append ("+").click (function () {
+                              zoom_in (stat)
+                          })).
+                          append ($("<a>").append ("-").click (function () {
+                              zoom_out (stat)
+                          })))
 })
 
+function zoom_in (stat) {
+    stat.window -= 0.1
+    render (stat)
+}
+
+function zoom_out (stat) {
+    stat.window += 0.1
+    render (stat)
+}
+
 function render (stat) {
-    var mag = 1
     var level = 0
     var u = 256 * Math.pow (2, level) // unit size in pixel
 
-    var ox = - Math.floor (stat.offset.x / u)
-    var oy = - Math.floor (stat.offset.y / u)
+    var n = Math.floor (stat.offset.x / u)
+    var m = Math.floor (stat.offset.y / u)
 
-    if (ox < 1) ox = 1
-    if (oy < 1) oy = 1
+    if (n < 1) n = 1
+    if (m < 1) m = 1
 
-    if (stat.offset_index.x != ox || stat.offset_index.y != oy) {
-	stat.tiles[ 0] = gen_piece (level, stat, ox - 1, oy - 1)
-	stat.tiles[ 1] = gen_piece (level, stat, ox    , oy - 1)
-	stat.tiles[ 2] = gen_piece (level, stat, ox + 1, oy - 1)
-	stat.tiles[ 3] = gen_piece (level, stat, ox + 2, oy - 1)
+    if (stat.offset_index.x != n || stat.offset_index.y != m) {
+	stat.tiles[ 0] = gen_piece (level, u, stat, n - 1, m - 1)
+	stat.tiles[ 1] = gen_piece (level, u, stat, n    , m - 1)
+	stat.tiles[ 2] = gen_piece (level, u, stat, n + 1, m - 1)
+	stat.tiles[ 3] = gen_piece (level, u, stat, n + 2, m - 1)
 
-	stat.tiles[ 4] = gen_piece (level, stat, ox - 1, oy    )
-	stat.tiles[ 5] = gen_piece (level, stat, ox    , oy    )
-	stat.tiles[ 6] = gen_piece (level, stat, ox + 1, oy    )
-	stat.tiles[ 7] = gen_piece (level, stat, ox + 2, oy    )
+	stat.tiles[ 4] = gen_piece (level, u, stat, n - 1, m    )
+	stat.tiles[ 5] = gen_piece (level, u, stat, n    , m    )
+	stat.tiles[ 6] = gen_piece (level, u, stat, n + 1, m    )
+	stat.tiles[ 7] = gen_piece (level, u, stat, n + 2, m    )
 
-	stat.tiles[ 8] = gen_piece (level, stat, ox - 1, oy + 1)
-	stat.tiles[ 9] = gen_piece (level, stat, ox    , oy + 1)
-	stat.tiles[10] = gen_piece (level, stat, ox + 1, oy + 1)
-	stat.tiles[11] = gen_piece (level, stat, ox + 2, oy + 1)
+	stat.tiles[ 8] = gen_piece (level, u, stat, n - 1, m + 1)
+	stat.tiles[ 9] = gen_piece (level, u, stat, n    , m + 1)
+	stat.tiles[10] = gen_piece (level, u, stat, n + 1, m + 1)
+	stat.tiles[11] = gen_piece (level, u, stat, n + 2, m + 1)
 
-	stat.tiles[12] = gen_piece (level, stat, ox - 1, oy + 2)
-	stat.tiles[13] = gen_piece (level, stat, ox    , oy + 2)
-	stat.tiles[14] = gen_piece (level, stat, ox + 1, oy + 2)
-	stat.tiles[15] = gen_piece (level, stat, ox + 2, oy + 2)
+	stat.tiles[12] = gen_piece (level, u, stat, n - 1, m + 2)
+	stat.tiles[13] = gen_piece (level, u, stat, n    , m + 2)
+	stat.tiles[14] = gen_piece (level, u, stat, n + 1, m + 2)
+	stat.tiles[15] = gen_piece (level, u, stat, n + 2, m + 2)
 
 	console.debug ("pieces ready")
     }
 
-    stat.offset_index.x = ox
-    stat.offset_index.y = oy
+    stat.offset_index.x = n
+    stat.offset_index.y = m
 
+    var w = stat.window
     for (var i in stat.tiles) {
-	var t = stat.tiles[i]
-	if (t.parent ().length == 0)
-	    stat.map_elem.append (t)
+        var t = stat.tiles[i]
+        if (t.parent ().length == 0)
+            stat.map_elem.append (t)
+            // stat.map_elem.append (t.css ({width: "" + Math.floor (u / w) + "px",
+            //                               height: "" + Math.floor (u / w) + "px"}))
     }
 }
 
-function get_key (i, k) {
+function get_key (level, i, k) {
     // console.debug ("get_key", i, k)
-    return k * 100 + i
+    return level * 10000 + k * 100 + i
 }
 
 function fill_0 (n) {
     return ("0" + n.toString ()).substr (-2)
 }
 
-function gen_piece (level, stat, i, k) {
-    console.debug ("gen_piece", i, k)
-    var file = "images/" + [level, fill_0 (i), fill_0 (k)].join ("-") + ".png"
+function gen_piece (level, u, stat, n, m) {
+    console.debug ("gen_piece", u, n, m)
+    var w = stat.window
+    var file = "images/" + [level, fill_0 (n), fill_0 (m)].join ("-") + ".png"
 
-    var elem = stat.cache.lookup (get_key (i, k))
+    var elem = stat.cache.lookup (get_key (level, n, m))
     if (! elem) {
-	elem = $('<img>').attr ("src", file).css ({position: "absolute",
-						   top: ((k - 1) * 256).toString () + "px",
-						   left: ((i - 1) * 256).toString () + "px"})
-	stat.cache.store (get_key (i, k), elem, function () {elem.remove ()})
+        // var px = n * u
+        // var py = m * u
+        // var css = {position: "absolute",
+	// 	   left: Math.floor (px).toString () + "px",
+	// 	   top: Math.floor (py).toString () + "px"}
+        // console.debug ("css", css)
+	elem = $('<img>').attr ("src", file)
+	// elem = $('<img>').attr ("src", file).css (css)
+	stat.cache.store (get_key (level, n, m), elem, function () {elem.remove ()})
     }
+
+    var px = n * u
+    var py = m * u
+    var css = {position: "absolute",
+	       left: Math.floor (px / w).toString () + "px",
+	       top: Math.floor (py / w).toString () + "px",
+               width: Math.floor (u / w).toString () + "px",
+               height: Math.floor (u / w).toString () + "px"}
+    console.debug ("css", css)
+    elem.css (css)
 
     return elem
 }
@@ -88,6 +125,13 @@ function gen_piece (level, stat, i, k) {
 function on_drag (stat) {
     return function (event, ui) {
 	// console.debug (event.clientX - stat.start.x, event.clientY - stat.start.y)
+	stat.offset.x -= (event.clientX - stat.start.x) * stat.window
+	stat.offset.y -= (event.clientY - stat.start.y) * stat.window
+
+	render (stat)
+
+	stat.start.x = event.clientX
+	stat.start.y = event.clientY
     }
 }
 
@@ -100,8 +144,8 @@ function on_start (stat) {
 
 function on_stop (stat) {
     return function (event, ui) {
-	stat.offset.x += event.clientX - stat.start.x
-	stat.offset.y += event.clientY - stat.start.y
+	stat.offset.x -= (event.clientX - stat.start.x) * stat.window
+	stat.offset.y -= (event.clientY - stat.start.y) * stat.window
 
 	console.debug (stat.offset.x, stat.offset.y)
 
