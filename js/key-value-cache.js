@@ -19,7 +19,7 @@ function cache_store (stat, key, value, on_removed) {
         }
     }
 
-    console.debug (full)
+    // console.debug (full)
 
     if (full) {
         console.assert (stat.last, "last")
@@ -50,7 +50,7 @@ function cache_store (stat, key, value, on_removed) {
     // console.debug (stat.a)
     // console.debug (stat.head.content.key, stat.last.content.key)
 
-    console.debug ("store")
+    // console.debug ("store")
     console.assert (! detect_loop (stat), "loop detected")
 }
 
@@ -88,11 +88,11 @@ function detect_loop (stat) {
         }
     }
 
-    console.debug (output)
+    // console.debug (output)
 }
 
 function cache_lookup (stat, key) {
-    console.debug ("lookup")
+    // console.debug ("lookup")
     for (var elem = stat.head; elem; elem = elem.next) {
         if (elem.content && elem.content.key == key) {
             if (elem == stat.head) {
