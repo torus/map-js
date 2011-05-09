@@ -43,7 +43,8 @@ function refresh (stat) {
 }
 
 function render (stat) {
-    var level = 0
+    var w = stat.window
+    var level = Math.max (Math.floor (Math.log (w) / Math.LN2), 0)
     var u = 256 * Math.pow (2, level) // unit size in pixel
 
     var n = Math.floor (stat.offset.x / u)
