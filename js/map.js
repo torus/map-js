@@ -27,11 +27,18 @@ $(document).ready (function () {
 
 function zoom_in (stat) {
     stat.window -= 0.1
-    render (stat)
+    refresh (stat)
 }
 
 function zoom_out (stat) {
     stat.window += 0.1
+    refresh (stat)
+}
+
+function refresh (stat) {
+    stat.map_elem.empty ()
+    stat.offset_index.x = null
+    stat.offset_index.y = null
     render (stat)
 }
 
@@ -72,7 +79,6 @@ function render (stat) {
     stat.offset_index.x = n
     stat.offset_index.y = m
 
-    var w = stat.window
     for (var i in stat.tiles) {
         var t = stat.tiles[i]
         if (t.parent ().length == 0)
@@ -90,7 +96,7 @@ function fill_0 (n) {
 }
 
 function gen_piece (level, u, stat, n, m) {
-    console.debug ("gen_piece", u, n, m)
+    // console.debug ("gen_piece", u, n, m)
     var w = stat.window
     var file = "images/" + [level, fill_0 (n), fill_0 (m)].join ("-") + ".png"
 
@@ -107,7 +113,7 @@ function gen_piece (level, u, stat, n, m) {
 	       top: Math.floor (py / w).toString () + "px",
                width: Math.floor (u / w).toString () + "px",
                height: Math.floor (u / w).toString () + "px"}
-    console.debug ("css", css)
+    // console.debug ("css", css)
     elem.css (css)
 
     return elem
