@@ -77,8 +77,6 @@ function render (stat) {
         var t = stat.tiles[i]
         if (t.parent ().length == 0)
             stat.map_elem.append (t)
-            // stat.map_elem.append (t.css ({width: "" + Math.floor (u / w) + "px",
-            //                               height: "" + Math.floor (u / w) + "px"}))
     }
 }
 
@@ -98,14 +96,7 @@ function gen_piece (level, u, stat, n, m) {
 
     var elem = stat.cache.lookup (get_key (level, n, m))
     if (! elem) {
-        // var px = n * u
-        // var py = m * u
-        // var css = {position: "absolute",
-	// 	   left: Math.floor (px).toString () + "px",
-	// 	   top: Math.floor (py).toString () + "px"}
-        // console.debug ("css", css)
 	elem = $('<img>').attr ("src", file)
-	// elem = $('<img>').attr ("src", file).css (css)
 	stat.cache.store (get_key (level, n, m), elem, function () {elem.remove ()})
     }
 
