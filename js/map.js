@@ -4,7 +4,7 @@ $(document).ready (function () {
 		offset_index: {x: null, y: null},
 		cache: new KeyValueCache (25),
 		tiles: [],
-                window: 1}
+                window: 8}
 
     var map_elem = $("<div>").draggable ({
 	    start: on_start (stat),
